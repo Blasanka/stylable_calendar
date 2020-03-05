@@ -16,6 +16,9 @@ class StylableCalendar extends StatefulWidget {
   final Color primaryColorDark;
   final Color secondaryColor;
 
+  final bool isPreviousActive;
+  final bool isNextActive;
+
   StylableCalendar({
     this.selectedDate,
     this.specialDays,
@@ -26,6 +29,8 @@ class StylableCalendar extends StatefulWidget {
     this.primaryColor,
     this.primaryColorDark,
     this.secondaryColor,
+    this.isPreviousActive,
+    this.isNextActive,
   });
 
   @override
@@ -121,17 +126,25 @@ class _StylableCalendarState extends State<StylableCalendar>
     double gridSize;
 
     if (MediaQuery.of(context).size.width < 600) {
-      gridSize = ((weekDayOfFirstDayOfMonth != 7) &&
-              weekDayOfFirstDayOfMonth > 4 &&
-              numberOfDaysInMonth >= 30)
-          ? 328
-          : 274;
+      if ((DartDays.nameOfTheWeekDay(DateTime(currentYear, currentMonth, numberOfDaysInMonth).weekday) == "Saturday")) {
+        gridSize = 274;
+      } else if (((weekDayOfFirstDayOfMonth != 7) &&
+          weekDayOfFirstDayOfMonth > 4 &&
+          numberOfDaysInMonth >= 30)) {
+        gridSize = 328;
+      } else {
+        gridSize = 274;
+      }
     } else {
-      gridSize = ((weekDayOfFirstDayOfMonth != 7) &&
-              weekDayOfFirstDayOfMonth > 4 &&
-              numberOfDaysInMonth >= 30)
-          ? 658
-          : 556;
+      if ((DartDays.nameOfTheWeekDay(DateTime(currentYear, currentMonth, numberOfDaysInMonth).weekday) == "Saturday")) {
+        gridSize = 556;
+      } else if (((weekDayOfFirstDayOfMonth != 7) &&
+          weekDayOfFirstDayOfMonth > 4 &&
+          numberOfDaysInMonth >= 30)) {
+        gridSize = 658;
+      } else {
+        gridSize = 556;
+      }
     }
 
     return SizedBox(
@@ -283,9 +296,9 @@ class _StylableCalendarState extends State<StylableCalendar>
           IconButton(
             icon: Icon(
               Icons.arrow_back_ios,
-              color: widget.secondaryColor,
+              color: widget.isPreviousActive ? widget.secondaryColor : Color(0xFFd1d1d1),
             ),
-            onPressed: whenPreviousButtonPressed,
+            onPressed: widget.isPreviousActive ? whenPreviousButtonPressed : Color(0xFFd1d1d1),
           ),
           Expanded(
             child: Center(
@@ -304,9 +317,9 @@ class _StylableCalendarState extends State<StylableCalendar>
           IconButton(
             icon: Icon(
               Icons.arrow_forward_ios,
-              color: widget.secondaryColor,
+              color: widget.isPreviousActive ? widget.secondaryColor : Color(0xFFd1d1d1),
             ),
-            onPressed: whenNextButtonPressed,
+            onPressed: widget.isPreviousActive ? whenNextButtonPressed : Color(0xFFd1d1d1),
           ),
         ],
       ),

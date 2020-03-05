@@ -1,6 +1,6 @@
 # stylable_calendar
 
-A new Flutter package project.
+A calendar that is less complicated and can customize as you want.
 
 ## Getting Started
 
