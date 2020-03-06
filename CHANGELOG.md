@@ -1,6 +1,7 @@
-## [0.1.1+hotfix.1] - Color is null issue fixed for google fonts.
+## [0.1.2] - Color is null issue fixed for google fonts.
 
 - Fixed: `type 'Color' is not a subtype of type '() => void'`
+- Next month laying to a complete row is fixed (Strict to only five rows).
 
 ## [0.1.1] - 'sunday is the first day' Month View bug fixed.
 

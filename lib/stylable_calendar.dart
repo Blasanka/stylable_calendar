@@ -301,7 +301,7 @@ class _StylableCalendarState extends State<StylableCalendar>
               Icons.arrow_back_ios,
               color: widget.isPreviousActive ? widget.secondaryColor : Color(0xFFd1d1d1),
             ),
-            onPressed: widget.isPreviousActive ? whenPreviousButtonPressed : Color(0xFFd1d1d1),
+            onPressed: widget.isPreviousActive ? whenPreviousButtonPressed : null,
           ),
           Expanded(
             child: Center(
@@ -322,7 +322,7 @@ class _StylableCalendarState extends State<StylableCalendar>
               Icons.arrow_forward_ios,
               color: widget.isPreviousActive ? widget.secondaryColor : Color(0xFFd1d1d1),
             ),
-            onPressed: widget.isPreviousActive ? whenNextButtonPressed : Color(0xFFd1d1d1),
+            onPressed: widget.isPreviousActive ? whenNextButtonPressed : null,
           ),
         ],
       ),
@@ -373,7 +373,6 @@ class _StylableCalendarState extends State<StylableCalendar>
     setState(() {
       currentMonthDayCount = DartDays.numberOfDaysForDate(thisDate);
     });
-    print("currentMonthDayCount $currentMonthDayCount");
     widget.onNext(thisDate);
   }
 
