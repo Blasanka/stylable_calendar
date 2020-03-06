@@ -224,7 +224,7 @@ class _StylableCalendarState extends State<StylableCalendar>
                     isCollapsed
                         ? Icons.keyboard_arrow_down
                         : Icons.keyboard_arrow_up,
-                    color: widget.secondaryColor,
+                    color: widget.secondaryColor ?? Colors.white,
                   ),
                 ),
               ),
@@ -239,9 +239,12 @@ class _StylableCalendarState extends State<StylableCalendar>
       int weekDayOfFirstDayOfMonth, int numberOfDaysInMonth, int nextMonthDay) {
     int day = index + 1;
     int displayingDay =
-        (weekDayOfFirstDayOfMonth < 7) ? day - weekDayOfFirstDayOfMonth : day;
+    (weekDayOfFirstDayOfMonth < 7) ? day - weekDayOfFirstDayOfMonth : day;
 
-    if ((weekDayOfFirstDayOfMonth < 7) && day <= weekDayOfFirstDayOfMonth) {
+    if ((weekDayOfFirstDayOfMonth == 7) && (numberOfDaysInMonth+1) == day) {
+      int previousMonthDay = 1;
+      return buildDisabledDayHolder(previousMonthDay);
+    } else if ((weekDayOfFirstDayOfMonth < 7) && day <= weekDayOfFirstDayOfMonth) {
       int previousMonthDayCount = DartDays.numberOfDaysForDate(
           DateTime(currentYear, currentMonth - 1, 1));
       int previousMonthDay =
@@ -306,7 +309,7 @@ class _StylableCalendarState extends State<StylableCalendar>
                 "${DartDays.nameOfMonth(currentMonth)}, $currentYear",
                 style: GoogleFonts.pTSans(
                   textStyle: TextStyle(
-                    color: widget.secondaryColor,
+                    color: widget.secondaryColor ?? Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.w300,
                   ),
@@ -384,7 +387,7 @@ class _StylableCalendarState extends State<StylableCalendar>
           style: GoogleFonts.pTSans(
             textStyle: TextStyle(
               fontSize: 16,
-              color: widget.secondaryColor,
+              color: widget.secondaryColor ?? Colors.white,
             ),
           ),
         ),
@@ -448,8 +451,9 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
   }
 
   InkWell buildDayHolder(BuildContext context, int day) {
-    holderColor =
-        widget.isSelectable ? widget.secondaryColor : Color(0xFFd1d1d1);
+    holderColor = widget.isSelectable
+        ? widget.secondaryColor ?? Colors.white
+        : Color(0xFFd1d1d1);
     return InkWell(
       onTap: () {
         widget.onTap();
@@ -497,7 +501,9 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
                   style: GoogleFonts.pTSans(
                     textStyle: TextStyle(
                       color:
-                          widget.isSelected ? widget.primaryColor : holderColor,
+                          widget.isSelected
+                              ? widget.primaryColor ?? Theme.of(context).primaryColor
+                              : holderColor,
                       fontSize: 18,
                     ),
                   ),
