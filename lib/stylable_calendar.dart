@@ -21,13 +21,11 @@ class StylableCalendar extends StatefulWidget {
   final Color secondaryColor;
 
   final bool isPreviousActive;
-  final bool isNextActive;
-
   StylableCalendar({
     this.selectedDate,
     this.specialDays,
-    this.isLoading, // if needed to animate after some task
     this.highlightedDays,
+    this.isLoading, // if needed to animate after some task
     this.onNext,
     this.onPrevious,
     this.primaryColor = Colors.black54,
@@ -37,6 +35,8 @@ class StylableCalendar extends StatefulWidget {
     this.isPreviousActive = false,
     this.isNextActive = false,
   });
+
+  final bool isNextActive;
 
   @override
   _StylableCalendarState createState() => _StylableCalendarState();
@@ -553,9 +553,8 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
       padding: EdgeInsets.all(6),
       child: Container(
         decoration: BoxDecoration(
-          border: widget.specialDays.contains(day)
-              ? Border.all(width: 1, color: holderColor)
-              : null,
+          border: (widget.specialDays != null && widget.specialDays.contains(day))
+              ? Border.all(width: 1, color: holderColor) : null,
           shape: BoxShape.circle,
           color: widget.isSelected ? holderColor : null,
         ),
@@ -563,7 +562,8 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            widget.highlightedDays.contains(day) ? buildDot() : SizedBox(),
+            (widget.highlightedDays != null && widget.highlightedDays.contains(day))
+                ? buildDot() : SizedBox(),
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

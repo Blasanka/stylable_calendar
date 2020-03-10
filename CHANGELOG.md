@@ -1,3 +1,8 @@
+<h3>[0.1.3+hotfix.1] - The method 'contains' was called on null</h3>
+
+- Fixed: <a href="https://github.com/Blasanka/stylable_calendar/issues/1"> widget.highlightedDays and widget.specialDay: 
+The method 'contains' was called on null</a>.
+
 <h3>[0.1.3] - Swipe to go back and forth.</h3>
 
 - Slide / swipe feature to calendar widget.
