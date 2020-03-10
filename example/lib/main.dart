@@ -31,9 +31,9 @@ class _HomePageState extends State<HomePage> {
             specialDays: [20, 13, 6, 10],
             highlightedDays: [1, 4, 5],
             isLoading: false,
-            primaryColor: Theme.of(context).primaryColor,
-            primaryColorDark: Theme.of(context).primaryColorDark,
-            secondaryColor: Theme.of(context).primaryColorLight,
+//            primaryColor: Theme.of(context).primaryColor,
+//            primaryColorDark: Theme.of(context).primaryColorDark,
+//            secondaryColor: Theme.of(context).primaryColorLight,
             // in this case to animate highlighted dots
             selectedDate: (DateTime date) {
               print(date);

@@ -1,8 +1,11 @@
 library stylable_calendar;
 
+import 'dart:async';
+
 import 'package:dart_days/dart_days.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stylable_calendar/page_dragger.dart';
 
 class StylableCalendar extends StatefulWidget {
   final List<int> specialDays;
@@ -26,11 +29,11 @@ class StylableCalendar extends StatefulWidget {
     this.highlightedDays,
     this.onNext,
     this.onPrevious,
-    this.primaryColor,
-    this.primaryColorDark,
-    this.secondaryColor,
-    this.isPreviousActive,
-    this.isNextActive,
+    this.primaryColor = Colors.black54,
+    this.primaryColorDark = Colors.black,
+    this.secondaryColor = Colors.white,
+    this.isPreviousActive = false,
+    this.isNextActive = false,
   });
 
   @override
@@ -38,7 +41,8 @@ class StylableCalendar extends StatefulWidget {
 }
 
 class _StylableCalendarState extends State<StylableCalendar>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
+
   int currentYear;
   int selected;
   int currentMonth;
@@ -53,8 +57,69 @@ class _StylableCalendarState extends State<StylableCalendar>
 
   bool isPrevious = false;
 
+  StreamController<SlideUpdate> slideUpdateStream;
+  AnimatedPageDragger animatedPageDragger;
+
+  SlideDirection slideDirection = SlideDirection.none;
+  double slidePercent = 0.0;
+
+  SlideUpdate slideUpdate = SlideUpdate(UpdateType.doneDragging, SlideDirection.none, 0.0);
+
+  _StylableCalendarState() {
+    slideUpdateStream = new StreamController<SlideUpdate>();
+    slideUpdateStream.stream.listen(slideUpdateListener);
+  }
+
+  void slideUpdateListener(SlideUpdate event) {
+    setState(() {
+      slideUpdate = event;
+      if (event.updateType == UpdateType.dragging) {
+        slideDirection = event.direction;
+        slidePercent = event.slidePercent;
+
+      } else if (event.updateType == UpdateType.doneDragging) {
+
+        if (slideDirection == SlideDirection.leftToRight) {
+          decideTransitionEnd(whenPreviousButtonPressed);
+        } else if (slideDirection == SlideDirection.rightToLeft) {
+          decideTransitionEnd(whenNextButtonPressed);
+        } else {/* nothing for now */}
+
+        animatedPageDragger.run();
+      } else if (event.updateType == UpdateType.animating) {
+        slideDirection = event.direction;
+        slidePercent = event.slidePercent;
+      } else if (event.updateType == UpdateType.doneAnimating) {
+        slideDirection = SlideDirection.none;
+        slidePercent = 0.0;
+
+        animatedPageDragger.dispose();
+      }
+    });
+  }
+
+  void decideTransitionEnd(function) {
+    if (slidePercent > 0.5) {
+      getAnimateDraggerInstance(TransitionGoal.open);
+      function();
+    } else {
+      getAnimateDraggerInstance(TransitionGoal.close);
+    }
+  }
+
+  void getAnimateDraggerInstance(TransitionGoal goal) {
+    animatedPageDragger = new AnimatedPageDragger(
+      slideDirection: slideDirection,
+      transitionGoal: goal,
+      slidePercent: slidePercent,
+      slideUpdateStream: slideUpdateStream,
+      vsync: this,
+    );
+  }
+
   @override
   void initState() {
+
     DateTime date = DateTime.now();
     selected = date.day;
     currentYear = date.year;
@@ -91,12 +156,17 @@ class _StylableCalendarState extends State<StylableCalendar>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        buildCalendarHeader(),
-        buildCalendarLabelsHeader(),
-        buildCalendarBody(),
-      ],
+    return PageDragger(
+      canDragLeftToRight: true,
+      canDragRightToLeft: true,
+      slideUpdateStream: this.slideUpdateStream,
+      child: Column(
+        children: <Widget>[
+          buildCalendarHeader(),
+          buildCalendarLabelsHeader(),
+          buildCalendarBody(),
+        ],
+      ),
     );
   }
 
@@ -224,7 +294,7 @@ class _StylableCalendarState extends State<StylableCalendar>
                     isCollapsed
                         ? Icons.keyboard_arrow_down
                         : Icons.keyboard_arrow_up,
-                    color: widget.secondaryColor ?? Colors.white,
+                    color: widget.secondaryColor,
                   ),
                 ),
               ),
@@ -309,7 +379,7 @@ class _StylableCalendarState extends State<StylableCalendar>
                 "${DartDays.nameOfMonth(currentMonth)}, $currentYear",
                 style: GoogleFonts.pTSans(
                   textStyle: TextStyle(
-                    color: widget.secondaryColor ?? Colors.white,
+                    color: widget.secondaryColor,
                     fontSize: 22,
                     fontWeight: FontWeight.w300,
                   ),
@@ -386,7 +456,7 @@ class _StylableCalendarState extends State<StylableCalendar>
           style: GoogleFonts.pTSans(
             textStyle: TextStyle(
               fontSize: 16,
-              color: widget.secondaryColor ?? Colors.white,
+              color: widget.secondaryColor,
             ),
           ),
         ),
@@ -451,7 +521,7 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
 
   InkWell buildDayHolder(BuildContext context, int day) {
     holderColor = widget.isSelectable
-        ? widget.secondaryColor ?? Colors.white
+        ? widget.secondaryColor
         : Color(0xFFd1d1d1);
     return InkWell(
       onTap: () {
@@ -501,7 +571,7 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
                     textStyle: TextStyle(
                       color:
                           widget.isSelected
-                              ? widget.primaryColor ?? Theme.of(context).primaryColor
+                              ? widget.primaryColor
                               : holderColor,
                       fontSize: 18,
                     ),

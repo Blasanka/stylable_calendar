@@ -1,3 +1,8 @@
+## [0.1.3] - Swipe to go back and forth.
+
+- Slide / swipe feature to calendar widget.
+- Runnable example app.
+
 ## [0.1.2] - Color is null issue fixed for google fonts.
 
 - Fixed: `type 'Color' is not a subtype of type '() => void'`
