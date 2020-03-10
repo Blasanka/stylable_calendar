@@ -1,14 +1,21 @@
-# stylable_calendar
+## stylable_calendar
 
 A calendar that is less complicated and can customize as you want.
 
-## Getting Started
-
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Parameters available:
+```
+StylableCalendar({
+    this.selectedDate, // Provide a DateTime object
+    this.specialDays, // will mark with border. ex: [1, 4, 6]
+    this.isLoading, // if needed to animate after some task
+    this.highlightedDays, // will mark with dot. ex: [1, 4, 6]
+    this.onNext, // (DateTime date) {}
+    this.onPrevious, // (DateTime date) {}
+    this.primaryColor = Colors.black54,
+    this.primaryColorDark = Colors.black,
+    this.secondaryColor = Colors.white,
+    this.isCollapsed = false,
+    this.isPreviousActive = false,
+    this.isNextActive = false,
+});
+```

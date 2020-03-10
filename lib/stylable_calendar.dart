@@ -11,6 +11,7 @@ class StylableCalendar extends StatefulWidget {
   final List<int> specialDays;
   final List<int> highlightedDays;
   final bool isLoading;
+  final bool isCollapsed;
   final ValueChanged<DateTime> selectedDate;
   final ValueChanged<DateTime> onNext;
   final ValueChanged<DateTime> onPrevious;
@@ -32,6 +33,7 @@ class StylableCalendar extends StatefulWidget {
     this.primaryColor = Colors.black54,
     this.primaryColorDark = Colors.black,
     this.secondaryColor = Colors.white,
+    this.isCollapsed = false,
     this.isPreviousActive = false,
     this.isNextActive = false,
   });
@@ -125,6 +127,8 @@ class _StylableCalendarState extends State<StylableCalendar>
     currentYear = date.year;
     currentMonth = date.month;
     currentMonthDayCount = DartDays.numberOfDaysInThisMonth();
+
+    isCollapsed = widget.isCollapsed;
 
     _scaleController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 900));
