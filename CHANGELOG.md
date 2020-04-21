@@ -1,7 +1,13 @@
-<h3>[0.1.3+hotfix.1] - The method 'contains' was called on null</h3>
+<h3>[0.1.3+hotfix.4] - Calendar Size changes
+
+- Calendar size adjust to take less than half of the screen.
+- Collapse view bug fixes.
+
+<h3>[0.1.3+hotfix.2] - The method 'contains' was called on null</h3>
 
 - Fixed: <a href="https://github.com/Blasanka/stylable_calendar/issues/1"> widget.highlightedDays and widget.specialDay: 
 The method 'contains' was called on null</a>.
+- Calendar height made responsive.
 
 <h3>[0.1.3] - Swipe to go back and forth.</h3>
 

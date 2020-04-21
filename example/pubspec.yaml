@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  google_fonts: ^0.3.9
   stylable_calendar:
     path: ../
 

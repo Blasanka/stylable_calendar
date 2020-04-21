@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:dart_days/dart_days.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:stylable_calendar/page_dragger.dart';
 
 class StylableCalendar extends StatefulWidget {
@@ -16,11 +16,16 @@ class StylableCalendar extends StatefulWidget {
   final ValueChanged<DateTime> onNext;
   final ValueChanged<DateTime> onPrevious;
 
+  final TextStyle headerTextStyle;
+  final TextStyle dayTextStyle;
+  final TextStyle dayNameTextStyle;
+
   final Color primaryColor;
   final Color primaryColorDark;
   final Color secondaryColor;
 
   final bool isPreviousActive;
+
   StylableCalendar({
     this.selectedDate,
     this.specialDays,
@@ -34,6 +39,9 @@ class StylableCalendar extends StatefulWidget {
     this.isCollapsed = false,
     this.isPreviousActive = false,
     this.isNextActive = false,
+    this.headerTextStyle,
+    this.dayTextStyle,
+    this.dayNameTextStyle,
   });
 
   final bool isNextActive;
@@ -44,7 +52,6 @@ class StylableCalendar extends StatefulWidget {
 
 class _StylableCalendarState extends State<StylableCalendar>
     with TickerProviderStateMixin {
-
   int currentYear;
   int selected;
   int currentMonth;
@@ -65,7 +72,8 @@ class _StylableCalendarState extends State<StylableCalendar>
   SlideDirection slideDirection = SlideDirection.none;
   double slidePercent = 0.0;
 
-  SlideUpdate slideUpdate = SlideUpdate(UpdateType.doneDragging, SlideDirection.none, 0.0);
+  SlideUpdate slideUpdate =
+      SlideUpdate(UpdateType.doneDragging, SlideDirection.none, 0.0);
 
   _StylableCalendarState() {
     slideUpdateStream = new StreamController<SlideUpdate>();
@@ -78,14 +86,14 @@ class _StylableCalendarState extends State<StylableCalendar>
       if (event.updateType == UpdateType.dragging) {
         slideDirection = event.direction;
         slidePercent = event.slidePercent;
-
       } else if (event.updateType == UpdateType.doneDragging) {
-
         if (slideDirection == SlideDirection.leftToRight) {
           decideTransitionEnd(whenPreviousButtonPressed);
         } else if (slideDirection == SlideDirection.rightToLeft) {
           decideTransitionEnd(whenNextButtonPressed);
-        } else {/* nothing for now */}
+        } else {
+          /* nothing for now */
+        }
 
         animatedPageDragger.run();
       } else if (event.updateType == UpdateType.animating) {
@@ -121,7 +129,6 @@ class _StylableCalendarState extends State<StylableCalendar>
 
   @override
   void initState() {
-
     DateTime date = DateTime.now();
     selected = date.day;
     currentYear = date.year;
@@ -167,25 +174,29 @@ class _StylableCalendarState extends State<StylableCalendar>
       child: Column(
         children: <Widget>[
           buildCalendarHeader(),
-          buildCalendarLabelsHeader(),
+          !isCollapsed
+            ? buildCalendarLabelsHeader(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: DartDays.daysNameOfWeek(numOfChars: 3, sundayFirst: true)
+                      .map((f) => buildDayNameHolder(f))
+                      .toList(),
+                ),
+              )
+              : SizedBox(),
           buildCalendarBody(),
         ],
       ),
     );
   }
 
-  Container buildCalendarLabelsHeader() {
+  Container buildCalendarLabelsHeader(Widget child) {
     return Container(
-      color: widget.primaryColor,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+      color: !isCollapsed ? widget.primaryColor : null,
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: SlideTransition(
         position: isPrevious ? _animationOpposite : _animation,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: DartDays.daysNameOfWeek(numOfChars: 3, sundayFirst: true)
-              .map((f) => buildDayNameHolder(f))
-              .toList(),
-        ),
+        child: child,
       ),
     );
   }
@@ -198,78 +209,129 @@ class _StylableCalendarState extends State<StylableCalendar>
     int nextMonthDay = numberOfDaysInMonth + weekDayOfFirstDayOfMonth;
 
     double gridSize;
+    double collapsedViewHeight;
+    double collapsedViewCalHeight;
 
-    if (MediaQuery.of(context).size.width < 600) {
-      if ((DartDays.nameOfTheWeekDay(DateTime(currentYear, currentMonth, numberOfDaysInMonth).weekday) == "Saturday")) {
-        gridSize = 274;
-      } else if (((weekDayOfFirstDayOfMonth != 7) &&
-          weekDayOfFirstDayOfMonth > 4 &&
+    Size screenSize = MediaQuery.of(context).size;
+    if (screenSize.width <= 500) {
+      collapsedViewHeight = 65;
+      collapsedViewCalHeight = 55;
+      if ((DartDays.nameOfTheWeekDay(
+              DateTime(currentYear, currentMonth, numberOfDaysInMonth)
+                  .weekday) ==
+          "Saturday")) {
+        gridSize = screenSize.height / 2.8; //274;
+      } else if ((weekDayOfFirstDayOfMonth > 4 &&
+          (weekDayOfFirstDayOfMonth != 7) &&
           numberOfDaysInMonth >= 30)) {
-        gridSize = 328;
+        gridSize = screenSize.height / 2.34; //328;
       } else {
-        gridSize = 274;
+        gridSize = screenSize.height / 2.8; //274;
       }
     } else {
-      if ((DartDays.nameOfTheWeekDay(DateTime(currentYear, currentMonth, numberOfDaysInMonth).weekday) == "Saturday")) {
-        gridSize = 556;
+      collapsedViewHeight = 132;
+      collapsedViewCalHeight = 102;
+      if ((DartDays.nameOfTheWeekDay(
+              DateTime(currentYear, currentMonth, numberOfDaysInMonth)
+                  .weekday) ==
+          "Saturday")) {
+        gridSize = screenSize.width / 1.45; //556;
       } else if (((weekDayOfFirstDayOfMonth != 7) &&
           weekDayOfFirstDayOfMonth > 4 &&
           numberOfDaysInMonth >= 30)) {
-        gridSize = 658;
+        gridSize = screenSize.width / 1.46; //658;
       } else {
-        gridSize = 556;
+        gridSize = screenSize.width / 1.45; // 556;
       }
     }
 
-    return SizedBox(
-      height: isCollapsed
-          ? (MediaQuery.of(context).size.width < 600) ? 62 : 138
-          : gridSize + 16,
-      child: Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: Stack(
-          children: <Widget>[
-            SizedBox.fromSize(
-              size: Size(
-                  double.infinity,
-                  isCollapsed
-                      ? (MediaQuery.of(context).size.width < 600) ? 52 : 112
-                      : gridSize), //272
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                color: widget.primaryColor,
-                child: SlideTransition(
-                  position: isPrevious ? _animationOpposite : _animation,
-                  child: GridView.count(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                    crossAxisSpacing: 1,
-                    mainAxisSpacing: 1,
-                    crossAxisCount: 7,
-                    physics: new NeverScrollableScrollPhysics(),
-                    children: List.generate(
-                      isCollapsed ? 7 : 45,
-                      (int index) {
-                        if (!isCollapsed)
+    if (isCollapsed) {
+      return SizedBox(
+        height: collapsedViewHeight,
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Stack(
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: Size(double.infinity, collapsedViewCalHeight), //272
+                child: Container(
+                  color: widget.primaryColor,
+                  child: SlideTransition(
+                    position: isPrevious ? _animationOpposite : _animation,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemExtent: 43.2,
+                        itemCount: numberOfDaysInMonth,
+                        itemBuilder: (BuildContext context, int index) {
+                          DateTime dateForDay = DateTime(currentYear, currentMonth, index+1);
+                          return Column(
+                            children: <Widget>[
+                              buildCalendarLabelsHeader(
+                                  buildDayNameHolder(DateFormat('EEEE').format(dateForDay).substring(0, 3)),
+                              ),
+                              SizedBox(
+                                  height: collapsedViewCalHeight - 20,
+                                  child: buildAnimatedDayHolder(index+1)),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              buildExpandButton(),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: gridSize + 14,
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Stack(
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: Size(
+                    double.infinity, gridSize), //272
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  color: widget.primaryColor,
+                  child: SlideTransition(
+                    position: isPrevious ? _animationOpposite : _animation,
+                    child: GridView.count(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      crossAxisSpacing: 0,
+                      mainAxisSpacing: 0,
+                      childAspectRatio: 1.15,
+                      crossAxisCount: 7,
+                      physics: new NeverScrollableScrollPhysics(),
+                      children: List.generate(
+                        45, (int index) {
                           return buildExpandedHolderView(
                               index,
                               weekDayOfFirstDayOfMonth,
                               numberOfDaysInMonth,
                               nextMonthDay);
-                        else
-                          return buildAnimatedDayHolder(
-                              (numberOfDaysInMonth == selected && index == 6)
-                                  ? index - 5
-                                  : (selected > 5)
-                                      ? selected - 5 + index
-                                      : index + 1);
-                      },
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
+              buildExpandButton(),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Positioned buildExpandButton() {
+    return Positioned(
               bottom: isCollapsed ? -4 : 0,
               right: 5,
               child: InkWell(
@@ -279,9 +341,10 @@ class _StylableCalendarState extends State<StylableCalendar>
                   });
                 },
                 child: Container(
-                  width: 28,
-                  height: 28,
-                  margin: EdgeInsets.only(top: 5, bottom: 4, left: 8, right: 0),
+                  width: 23,
+                  height: 23,
+                  margin:
+                      EdgeInsets.only(top: 5, bottom: 4, left: 8, right: 0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
@@ -289,36 +352,36 @@ class _StylableCalendarState extends State<StylableCalendar>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        widget.primaryColorDark.withOpacity(.8),
-                        widget.primaryColor.withOpacity(.9),
+                        widget.primaryColorDark.withOpacity(.5),
+                        widget.primaryColor.withOpacity(.6),
                       ],
                     ),
                   ),
-                  child: Icon(
-                    isCollapsed
-                        ? Icons.keyboard_arrow_down
-                        : Icons.keyboard_arrow_up,
-                    color: widget.secondaryColor,
+                  child: Center(
+                    child: Icon(
+                      !isCollapsed
+                          ? Icons.keyboard_arrow_down
+                          : Icons.keyboard_arrow_up,
+                      color: widget.secondaryColor,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            );
   }
 
   AnimatedDayHolder buildExpandedHolderView(int index,
       int weekDayOfFirstDayOfMonth, int numberOfDaysInMonth, int nextMonthDay) {
     int day = index + 1;
     int displayingDay =
-    (weekDayOfFirstDayOfMonth < 7) ? day - weekDayOfFirstDayOfMonth : day;
+        (weekDayOfFirstDayOfMonth < 7) ? day - weekDayOfFirstDayOfMonth : day;
 
-    if ((weekDayOfFirstDayOfMonth == 7) && (numberOfDaysInMonth+1) == day) {
+    if ((weekDayOfFirstDayOfMonth == 7) && (numberOfDaysInMonth + 1) == day) {
       int previousMonthDay = 1;
       return buildDisabledDayHolder(previousMonthDay);
-    } else if ((weekDayOfFirstDayOfMonth < 7) && day <= weekDayOfFirstDayOfMonth) {
+    } else if ((weekDayOfFirstDayOfMonth < 7) &&
+        day <= weekDayOfFirstDayOfMonth) {
       int previousMonthDayCount = DartDays.numberOfDaysForDate(
           DateTime(currentYear, currentMonth - 1, 1));
       int previousMonthDay =
@@ -344,9 +407,10 @@ class _StylableCalendarState extends State<StylableCalendar>
       specialDays: widget.specialDays,
       highlightedDays: widget.highlightedDays,
       isSelected: displayingDay == selected,
-      isLoading: widget.isLoading,
+      isLoading: widget.isLoading ?? false,
       primaryColor: widget.primaryColor,
       secondaryColor: widget.secondaryColor,
+      dayTextStyle: widget.dayTextStyle,
     );
   }
 
@@ -360,43 +424,61 @@ class _StylableCalendarState extends State<StylableCalendar>
       isSelectable: false,
       primaryColor: widget.primaryColor,
       secondaryColor: widget.secondaryColor,
+      dayTextStyle: widget.dayTextStyle,
     );
   }
 
   Container buildCalendarHeader() {
     return Container(
       color: widget.primaryColor,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 7.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: widget.isPreviousActive ? widget.secondaryColor : Color(0xFFd1d1d1),
+          InkWell(
+            onTap: widget.isPreviousActive ? whenPreviousButtonPressed : null,
+            child: Container(
+              width: 32,
+              height: 32,
+              child: Icon(
+                Icons.arrow_back_ios,
+                size: 20,
+                color: widget.isPreviousActive
+                    ? widget.secondaryColor
+                    : Color(0xFFd1d1d1),
+              ),
             ),
-            onPressed: widget.isPreviousActive ? whenPreviousButtonPressed : null,
           ),
           Expanded(
             child: Center(
-              child: Text(
-                "${DartDays.nameOfMonth(currentMonth)}, $currentYear",
-                style: GoogleFonts.pTSans(
-                  textStyle: TextStyle(
-                    color: widget.secondaryColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w300,
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: Text(
+                  "${DartDays.nameOfMonth(currentMonth)}, $currentYear",
+                  style: (widget.headerTextStyle != null)
+                      ? widget.headerTextStyle
+                      : TextStyle(
+                          color: widget.secondaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300,
+                        ),
                 ),
               ),
             ),
           ),
-          IconButton(
-            icon: Icon(
-              Icons.arrow_forward_ios,
-              color: widget.isPreviousActive ? widget.secondaryColor : Color(0xFFd1d1d1),
+          InkWell(
+            onTap: widget.isPreviousActive ? whenNextButtonPressed : null,
+            child: Container(
+              width: 32,
+              height: 32,
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 20,
+                color: widget.isPreviousActive
+                    ? widget.secondaryColor
+                    : Color(0xFFd1d1d1),
+              ),
             ),
-            onPressed: widget.isPreviousActive ? whenNextButtonPressed : null,
           ),
         ],
       ),
@@ -453,16 +535,16 @@ class _StylableCalendarState extends State<StylableCalendar>
   Widget buildDayNameHolder(String f) {
     return Container(
       width: 38,
-      height: 20,
+      height: 18,
       child: Center(
         child: Text(
           f,
-          style: GoogleFonts.pTSans(
-            textStyle: TextStyle(
-              fontSize: 16,
-              color: widget.secondaryColor,
-            ),
-          ),
+          style: (widget.dayNameTextStyle != null)
+              ? widget.dayNameTextStyle
+              : TextStyle(
+                  fontSize: 12,
+                  color: widget.secondaryColor,
+                ),
         ),
       ),
     );
@@ -480,6 +562,8 @@ class AnimatedDayHolder extends StatefulWidget {
   final Color primaryColor;
   final Color secondaryColor;
 
+  final TextStyle dayTextStyle;
+
   AnimatedDayHolder({
     Key key,
     this.onTap,
@@ -491,6 +575,7 @@ class AnimatedDayHolder extends StatefulWidget {
     this.isLoading = false,
     this.primaryColor,
     this.secondaryColor,
+    this.dayTextStyle,
   });
 
   @override
@@ -524,9 +609,8 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
   }
 
   InkWell buildDayHolder(BuildContext context, int day) {
-    holderColor = widget.isSelectable
-        ? widget.secondaryColor
-        : Color(0xFFd1d1d1);
+    holderColor =
+        widget.isSelectable ? widget.secondaryColor : Color(0xFFd1d1d1);
     return InkWell(
       onTap: () {
         widget.onTap();
@@ -538,7 +622,7 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
         }
       },
       child: ScaleTransition(
-        scale: Tween(begin: 0.96, end: 1.14).animate(CurvedAnimation(
+        scale: Tween(begin: 0.92, end: 1.03).animate(CurvedAnimation(
           parent: _controller,
           curve: Curves.elasticOut,
         )),
@@ -550,11 +634,13 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
   Padding buildHolder(int day, BuildContext context) {
     return Padding(
       key: Key(day.toString()),
-      padding: EdgeInsets.all(6),
+      padding: EdgeInsets.all(4),
       child: Container(
         decoration: BoxDecoration(
-          border: (widget.specialDays != null && widget.specialDays.contains(day))
-              ? Border.all(width: 1, color: holderColor) : null,
+          border:
+              (widget.specialDays != null && widget.specialDays.contains(day))
+                  ? Border.all(width: 1, color: holderColor)
+                  : null,
           shape: BoxShape.circle,
           color: widget.isSelected ? holderColor : null,
         ),
@@ -562,8 +648,10 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            (widget.highlightedDays != null && widget.highlightedDays.contains(day))
-                ? buildDot() : SizedBox(),
+            (widget.highlightedDays != null &&
+                    widget.highlightedDays.contains(day))
+                ? buildDot()
+                : SizedBox(),
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -571,15 +659,14 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
               child: Center(
                 child: Text(
                   day.toString(),
-                  style: GoogleFonts.pTSans(
-                    textStyle: TextStyle(
-                      color:
-                          widget.isSelected
+                  style: (widget.dayTextStyle != null)
+                      ? widget.dayTextStyle
+                      : TextStyle(
+                          color: widget.isSelected
                               ? widget.primaryColor
                               : holderColor,
-                      fontSize: 18,
-                    ),
-                  ),
+                          fontSize: 15,
+                        ),
                 ),
               ),
             ),
@@ -595,8 +682,8 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
           opacity: widget.isLoading ? 0.0 : 1.0,
           duration: Duration(milliseconds: 1000),
           child: Container(
-            width: 4,
-            height: 4,
+            width: 3,
+            height: 3,
             decoration: BoxDecoration(
               color: holderColor,
               shape: BoxShape.circle,
