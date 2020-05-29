@@ -31,6 +31,9 @@ class _HomePageState extends State<HomePage> {
           StylableCalendar(
             specialDays: [20, 13, 6, 10],
             highlightedDays: [1, 4, 5],
+            isNextActive: true,
+            isPreviousActive: true,
+            isCollapsed: true,
 //            primaryColor: Theme.of(context).primaryColor,
 //            primaryColorDark: Theme.of(context).primaryColorDark,
 //            secondaryColor: Theme.of(context).primaryColorLight,
@@ -40,10 +43,10 @@ class _HomePageState extends State<HomePage> {
 //                fontSize: 18,
 //              ),
 //            ),
-//            dayTextStyle: TextStyle(
-//              color: Colors.lightGreen,
-//              fontSize: 18,
-//            ),
+            dayTextStyle: TextStyle(
+              color: Colors.lightGreen,
+              fontSize: 18,
+            ),
 //            dayNameTextStyle: TextStyle(
 //              fontSize: 16,
 //              color: Colors.orangeAccent,
