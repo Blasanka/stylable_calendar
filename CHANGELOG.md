@@ -1,9 +1,10 @@
-<h3>[0.1.3+hotfix.5] - Calendar Size changes
+<h3>[0.1.3+hotfix.6] - Calendar Size, collapse view bug fixes
 
 - Calendar size adjust to take less than half of the screen.
 - Collapse view bug fixes.
 - Collapse view jump to not working fixed
 - Given option to style day
+- Parameter for selected day color
 
 <h3>[0.1.3+hotfix.2] - The method 'contains' was called on null</h3>
 

@@ -29,6 +29,7 @@ class StylableCalendar extends StatefulWidget {
   final Color primaryColor;
   final Color primaryColorDark;
   final Color secondaryColor;
+  final Color selectedDayColor;
 
   final bool isPreviousActive;
 
@@ -43,6 +44,7 @@ class StylableCalendar extends StatefulWidget {
     this.primaryColor = Colors.black54,
     this.primaryColorDark = Colors.black,
     this.secondaryColor = Colors.white,
+    this.selectedDayColor,
     this.isCollapsed = false,
     this.isPreviousActive = false,
     this.isNextActive = false,

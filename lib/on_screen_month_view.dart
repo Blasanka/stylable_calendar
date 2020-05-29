@@ -23,6 +23,7 @@ class OnScreenMonthView extends StatefulWidget {
   final Color primaryColor;
   final Color primaryColorDark;
   final Color secondaryColor;
+  final Color selectedDayColor;
 
   final bool isPreviousActive;
 
@@ -36,6 +37,7 @@ class OnScreenMonthView extends StatefulWidget {
     this.primaryColor = Colors.black54,
     this.primaryColorDark = Colors.black,
     this.secondaryColor = Colors.white,
+    this.selectedDayColor,
     this.isCollapsed = false,
     this.isPreviousActive = false,
     this.isNextActive = false,
@@ -425,6 +427,7 @@ class _OnScreenMonthViewState extends State<OnScreenMonthView>
       primaryColor: widget.primaryColor,
       secondaryColor: widget.secondaryColor,
       dayTextStyle: widget.dayTextStyle,
+      selectedDayColor: widget.selectedDayColor,
     );
   }
 
@@ -439,6 +442,7 @@ class _OnScreenMonthViewState extends State<OnScreenMonthView>
       primaryColor: widget.primaryColor,
       secondaryColor: widget.secondaryColor,
       dayTextStyle: widget.dayTextStyle,
+      selectedDayColor: widget.selectedDayColor,
     );
   }
 
@@ -575,6 +579,7 @@ class AnimatedDayHolder extends StatefulWidget {
   final bool isLoading;
   final Color primaryColor;
   final Color secondaryColor;
+  final Color selectedDayColor;
 
   final TextStyle dayTextStyle;
 
@@ -589,6 +594,7 @@ class AnimatedDayHolder extends StatefulWidget {
     this.isLoading = false,
     this.primaryColor,
     this.secondaryColor,
+    this.selectedDayColor,
     this.dayTextStyle,
   });
 
@@ -677,7 +683,7 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
                       ? widget.dayTextStyle
                       : TextStyle(
                     color: widget.isSelected
-                        ? widget.primaryColor
+                        ? widget.selectedDayColor ?? widget.primaryColor
                         : holderColor,
                     fontSize: 15,
                   ),
