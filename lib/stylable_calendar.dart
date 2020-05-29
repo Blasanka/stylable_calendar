@@ -92,6 +92,7 @@ class _StylableCalendarState extends State<StylableCalendar> {
           primaryColor: widget.primaryColor,
           primaryColorDark: widget.primaryColorDark,
           secondaryColor: widget.secondaryColor,
+          selectedDayColor: widget.selectedDayColor,
           isCollapsed: widget.isCollapsed,
           isPreviousActive: widget.isPreviousActive,
           isNextActive: widget.isNextActive,

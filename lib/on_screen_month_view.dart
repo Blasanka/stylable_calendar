@@ -416,8 +416,8 @@ class _OnScreenMonthViewState extends State<OnScreenMonthView>
   AnimatedDayHolder buildAnimatedDayHolder(int displayingDay) {
     return AnimatedDayHolder(
       onTap: () {
-        setState(() => selected = displayingDay);
         widget.selectedDate(DateTime(currentYear, currentMonth, selected));
+        setState(() => selected = displayingDay);
       },
       day: displayingDay,
       specialDays: widget.specialDays,
@@ -433,7 +433,7 @@ class _OnScreenMonthViewState extends State<OnScreenMonthView>
 
   AnimatedDayHolder buildDisabledDayHolder(int monthDay) {
     return AnimatedDayHolder(
-      onTap: () {},
+      onTap: null,
       day: monthDay,
       specialDays: [],
       highlightedDays: [],
@@ -619,8 +619,8 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -629,11 +629,11 @@ class _AnimatedDayHolderState extends State<AnimatedDayHolder>
   }
 
   InkWell buildDayHolder(BuildContext context, int day) {
-    holderColor =
-    widget.isSelectable ? widget.secondaryColor : Color(0xFFd1d1d1);
+    holderColor = widget.isSelectable
+        ? widget.secondaryColor : Color(0xFFd1d1d1);
     return InkWell(
       onTap: () {
-        widget.onTap();
+        if (widget.onTap != null) widget.onTap();
         if (!_controller.isCompleted)
           _controller.forward();
         else {

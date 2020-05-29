@@ -1,4 +1,4 @@
-<h3>[0.1.3+hotfix.6] - Calendar Size, collapse view bug fixes
+<h3>[0.1.3+hotfix.8] - Calendar Size, collapse view bug fixes
 
 - Calendar size adjust to take less than half of the screen.
 - Collapse view bug fixes.

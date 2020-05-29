@@ -28,39 +28,57 @@ class _HomePageState extends State<HomePage> {
       body: ListView(
         children: <Widget>[
           StylableCalendar(
-            specialDays: [20, 13, 6, 10],
-            highlightedDays: [1, 4, 5],
+            primaryColor: Colors.white.withAlpha(100),
+            primaryColorDark: Colors.white,
+            secondaryColor: Theme.of(context).primaryColor,
+            selectedDayColor: Colors.white,
+            isCollapsed: true,
             isNextActive: true,
             isPreviousActive: true,
-            isCollapsed: true,
-//            primaryColor: Theme.of(context).primaryColor,
-//            primaryColorDark: Theme.of(context).primaryColorDark,
-//            secondaryColor: Theme.of(context).primaryColorLight,
-//            headerTextStyle: GoogleFonts.pTSans(
-//              textStyle: TextStyle(
-//                color: Colors.red,
-//                fontSize: 18,
-//              ),
-//            ),
-            dayTextStyle: TextStyle(
-              color: Colors.lightGreen,
-              fontSize: 18,
-            ),
-//            dayNameTextStyle: TextStyle(
-//              fontSize: 16,
-//              color: Colors.orangeAccent,
-//            ),
-            // in this case to animate highlighted dots
             selectedDate: (DateTime date) {
-              print(date);
+              return;
             },
-            onNext: (DateTime date) {
-              print(date);
+            onNext: (DateTime date) async {
+              return;
             },
-            onPrevious: (DateTime date) {
-              print(date);
+            onPrevious: (DateTime date) async {
+              return;
             },
           ),
+//          StylableCalendar(
+//            specialDays: [20, 13, 6, 10],
+//            highlightedDays: [1, 4, 5],
+//            isNextActive: true,
+//            isPreviousActive: true,
+//            isCollapsed: true,
+////            primaryColor: Theme.of(context).primaryColor,
+////            primaryColorDark: Theme.of(context).primaryColorDark,
+////            secondaryColor: Theme.of(context).primaryColorLight,
+////            headerTextStyle: GoogleFonts.pTSans(
+////              textStyle: TextStyle(
+////                color: Colors.red,
+////                fontSize: 18,
+////              ),
+////            ),
+//            dayTextStyle: TextStyle(
+//              color: Colors.lightGreen,
+//              fontSize: 18,
+//            ),
+////            dayNameTextStyle: TextStyle(
+////              fontSize: 16,
+////              color: Colors.orangeAccent,
+////            ),
+//            // in this case to animate highlighted dots
+//            selectedDate: (DateTime date) {
+//              print(date);
+//            },
+//            onNext: (DateTime date) {
+//              print(date);
+//            },
+//            onPrevious: (DateTime date) {
+//              print(date);
+//            },
+//          ),
         ],
       ),
     );
